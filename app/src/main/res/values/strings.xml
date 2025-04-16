@@ -1,0 +1,23 @@
+<resources>
+    <string name="app_name">Painter</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="camera">Камера</string>
+    <string name="gallery">Галерея</string>
+    <string name="image">Изображение</string>
+    <string name="save">Сохранить</string>
+    <string name="crop">Обрезать</string>
+    <string name="mirror">Отзеркалить</string>
+    <string name="rotate">Повернуть</string>
+    <string name="brush">Кисть</string>
+    <string name="eraser">Ластик</string>
+    <string name="redo">Повторить</string>
+    <string name="undo">Отменить</string>
+    <string name="line">Линия</string>
+    <string name="square">Квадрат</string>
+    <string name="circle">Круг</string>
+    <string name="text">Добавить текст</string>
+    <string name="color">Выбрать цвет</string>
+    <string name="add_icon">Добавить иконку</string>
+    <string name="crop_image">Применить обрезку</string>
+</resources>

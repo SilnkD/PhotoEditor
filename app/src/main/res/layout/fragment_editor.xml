@@ -1,0 +1,194 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/editor_fragment"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".EditorFragment">
+
+    <!-- Область редактирования -->
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <ImageView
+            android:id="@+id/image_view"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:scaleType="fitCenter"
+            android:adjustViewBounds="true" />
+
+        <com.example.painter.DrawingView
+            android:id="@+id/drawing_view"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@android:color/transparent" />
+
+        <com.example.painter.CropOverlayView
+            android:id="@+id/crop_overlay"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:visibility="gone" />
+    </RelativeLayout>
+
+    <!-- Верхняя панель -->
+    <LinearLayout
+        android:id="@+id/tool_bar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:padding="4dp"
+        android:gravity="center"
+        android:background="#CCEEEEEE"
+        android:layout_gravity="top">
+
+        <ImageButton
+            android:id="@+id/button_camera"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:src="@drawable/ic_camera_button"
+            android:contentDescription="@string/camera"
+            android:background="?android:selectableItemBackground" />
+
+        <ImageButton
+            android:id="@+id/button_gallery"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:src="@drawable/ic_gallery_button"
+            android:contentDescription="@string/gallery"
+            android:background="?android:selectableItemBackground" />
+
+        <ImageButton
+            android:id="@+id/button_save"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:src="@drawable/ic_save_button"
+            android:contentDescription="@string/save"
+            android:background="?android:selectableItemBackground" />
+
+        <ImageButton
+            android:id="@+id/button_crop"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:src="@android:drawable/ic_menu_crop"
+            android:contentDescription="@string/crop"
+            android:background="?android:selectableItemBackground" />
+
+        <Button
+            android:id="@+id/button_apply_crop"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/crop_image"
+            android:layout_gravity="center|bottom"
+            android:layout_marginBottom="16dp"
+            android:visibility="gone"/>
+
+        <ImageButton
+            android:id="@+id/button_rotate"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:src="@drawable/ic_rotate_button"
+            android:contentDescription="@string/rotate"
+            android:background="?android:selectableItemBackground" />
+
+        <ImageButton
+            android:id="@+id/button_mirror"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:src="@drawable/ic_revert_button"
+            android:contentDescription="@string/mirror"
+            android:background="?android:selectableItemBackground" />
+
+        <ImageButton
+            android:id="@+id/button_undo"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:src="@drawable/ic_undo_button"
+            android:contentDescription="@string/undo"
+            android:background="?android:selectableItemBackground" />
+
+        <ImageButton
+            android:id="@+id/button_redo"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:src="@drawable/ic_redo_button"
+            android:contentDescription="@string/redo"
+            android:background="?android:selectableItemBackground" />
+    </LinearLayout>
+
+    <!-- Панель рисования -->
+
+    <LinearLayout
+        android:id="@+id/drawing_toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_gravity="bottom"
+        android:background="#DDFFFFFF"
+        android:padding="4dp"
+        android:gravity="center_vertical">
+
+        <ImageButton
+            android:id="@+id/button_eraser"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:src="@android:drawable/ic_menu_delete"
+            android:contentDescription="@string/eraser"
+            android:background="?android:selectableItemBackground" />
+
+        <ImageButton
+            android:id="@+id/button_draw_line"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:src="@android:drawable/ic_menu_edit"
+            android:contentDescription="@string/line"
+            android:background="?android:selectableItemBackground" />
+
+        <ImageButton
+            android:id="@+id/button_draw_square"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:src="@android:drawable/ic_menu_add"
+            android:contentDescription="@string/square"
+            android:background="?android:selectableItemBackground" />
+
+        <ImageButton
+            android:id="@+id/button_draw_circle"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:src="@android:drawable/ic_menu_compass"
+            android:contentDescription="@string/circle"
+            android:background="?android:selectableItemBackground" />
+
+        <ImageButton
+            android:id="@+id/button_add_text"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:src="@drawable/ic_text_button"
+            android:contentDescription="@string/text"
+            android:background="?android:selectableItemBackground" />
+
+        <ImageButton
+            android:id="@+id/button_draw_drawable"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:src="@android:drawable/btn_star"
+            android:contentDescription="@string/add_icon"
+            android:background="?android:selectableItemBackground" />
+
+        <ImageButton
+            android:id="@+id/button_color_picker"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:src="@android:drawable/ic_menu_manage"
+            android:contentDescription="@string/color"
+            android:background="?android:selectableItemBackground" />
+
+        <SeekBar
+            android:id="@+id/stroke_width_seekbar"
+            android:layout_width="120dp"
+            android:layout_height="wrap_content"
+            android:max="50"
+            android:progress="8" />
+    </LinearLayout>
+</FrameLayout>
