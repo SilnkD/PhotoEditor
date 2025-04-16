@@ -50,6 +50,24 @@ public class DrawingView extends View {
     private float lastTouchX, lastTouchY;
 
     private Callback callback;
+    private final Matrix baseImageMatrix = new Matrix();
+
+    private void calculateBaseImageMatrix() {
+        if (backgroundBitmap == null) return;
+
+        float viewWidth = getWidth();
+        float viewHeight = getHeight();
+        float imageWidth = backgroundBitmap.getWidth();
+        float imageHeight = backgroundBitmap.getHeight();
+
+        float scale = Math.min(viewWidth / imageWidth, viewHeight / imageHeight);
+        float dx = (viewWidth - imageWidth * scale) / 2f;
+        float dy = (viewHeight - imageHeight * scale) / 2f;
+
+        baseImageMatrix.reset();
+        baseImageMatrix.postScale(scale, scale);
+        baseImageMatrix.postTranslate(dx, dy);
+    }
 
     public DrawingView(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -63,6 +81,12 @@ public class DrawingView extends View {
         paint.setStyle(Paint.Style.STROKE);
         paint.setStrokeWidth(8f);
         paint.setColor(Color.BLACK);
+    }
+
+    public void setBaseImage(Bitmap bitmap) {
+        this.backgroundBitmap = bitmap;
+        calculateBaseImageMatrix(); // <-- обязательно вызов масштабирования и центрирования
+        invalidate();
     }
 
     public void setCallback(Callback callback) {
@@ -176,11 +200,12 @@ public class DrawingView extends View {
     @Override
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
+
+        if (backgroundBitmap != null) {
+            canvas.drawBitmap(backgroundBitmap, baseImageMatrix, null);
+        }
         canvas.save();
         canvas.scale(currentScale, currentScale);
-        if (backgroundBitmap != null) {
-            canvas.drawBitmap(backgroundBitmap, 0, 0, null);
-        }
         for (DrawableElement element : elements) {
             drawElement(canvas, element);
         }

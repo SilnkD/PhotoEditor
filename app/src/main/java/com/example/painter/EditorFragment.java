@@ -24,6 +24,7 @@ import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
+import androidx.core.content.FileProvider;
 import androidx.fragment.app.Fragment;
 
 import com.github.dhaval2404.colorpicker.ColorPickerDialog;
@@ -64,6 +65,14 @@ public class EditorFragment extends Fragment {
     private Handler handler = new Handler();
     private Runnable saveStateRunnable;
     private boolean stateChanged = false; // Флаг для отслеживания изменений
+    private Uri photoUri;
+
+    private File createImageFile() throws IOException {
+        String fileName = "JPEG_" + System.currentTimeMillis();
+        File storageDir = requireContext().getExternalFilesDir(Environment.DIRECTORY_PICTURES);
+        File image = File.createTempFile(fileName, ".jpg", storageDir);
+        return image;
+    }
 
     @Nullable
     @Override
@@ -103,16 +112,19 @@ public class EditorFragment extends Fragment {
         captureImageLauncher = registerForActivityResult(
                 new ActivityResultContracts.StartActivityForResult(),
                 result -> {
-                    if (result.getResultCode() == Activity.RESULT_OK && result.getData() != null) {
-                        Bitmap photo = (Bitmap) result.getData().getExtras().get("data");
-                        if (photo != null) {
-                            currentBitmap = photo;
+                    if (result.getResultCode() == Activity.RESULT_OK) {
+                        try {
+                            currentBitmap = MediaStore.Images.Media.getBitmap(requireContext().getContentResolver(), photoUri);
                             updateImageViews();
                             updateCanvasState();
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                            showToast("Ошибка при загрузке изображения");
                         }
                     }
                 }
         );
+
 
         return view;
     }
@@ -274,11 +286,18 @@ public class EditorFragment extends Fragment {
     private void dispatchTakePictureIntent() {
         Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
         if (intent.resolveActivity(requireContext().getPackageManager()) != null) {
-            openCamera();
-        } else {
-            showToast("Камера не поддерживается");
+            try {
+                File photoFile = createImageFile();
+                photoUri = FileProvider.getUriForFile(requireContext(), "com.example.painter.fileprovider", photoFile);
+                intent.putExtra(MediaStore.EXTRA_OUTPUT, photoUri);
+                captureImageLauncher.launch(intent);
+            } catch (IOException e) {
+                e.printStackTrace();
+                showToast("Ошибка создания файла изображения");
+            }
         }
     }
+
 
     private void pickImageFromGallery() {
         Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
@@ -404,9 +423,9 @@ public class EditorFragment extends Fragment {
         updateCanvasState();
     }
     private void updateImageViews() {
-        if (drawingView != null && imageView != null && currentBitmap != null) {
-            imageView.setImageBitmap(currentBitmap);
-            drawingView.setBackgroundBitmap(currentBitmap);
+        if (currentBitmap != null) {
+            imageView.setVisibility(View.GONE);
+            drawingView.setBaseImage(currentBitmap);
             drawingView.invalidate();
         }
     }
