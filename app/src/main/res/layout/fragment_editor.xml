@@ -70,18 +70,9 @@
             android:id="@+id/button_crop"
             android:layout_width="48dp"
             android:layout_height="48dp"
-            android:src="@android:drawable/ic_menu_crop"
+            android:src="@drawable/ic_crop_button"
             android:contentDescription="@string/crop"
             android:background="?android:selectableItemBackground" />
-
-        <Button
-            android:id="@+id/button_apply_crop"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/crop_image"
-            android:layout_gravity="center|bottom"
-            android:layout_marginBottom="16dp"
-            android:visibility="gone"/>
 
         <ImageButton
             android:id="@+id/button_rotate"
@@ -116,6 +107,17 @@
             android:background="?android:selectableItemBackground" />
     </LinearLayout>
 
+    <ImageButton
+        android:id="@+id/button_confirm_crop"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:layout_gravity="top|end"
+        android:layout_margin="8dp"
+        android:src="@drawable/ic_check_button"
+        android:background="?android:selectableItemBackground"
+        android:contentDescription="@string/crop_image"
+        android:visibility="gone"/>
+
     <!-- Панель рисования -->
 
     <LinearLayout
@@ -132,38 +134,64 @@
             android:id="@+id/button_eraser"
             android:layout_width="48dp"
             android:layout_height="48dp"
-            android:src="@android:drawable/ic_menu_delete"
+            android:layout_weight="1"
+            android:layout_gravity="bottom"
+            android:src="@drawable/ic_eraser_button"
             android:contentDescription="@string/eraser"
             android:background="?android:selectableItemBackground" />
 
-        <ImageButton
-            android:id="@+id/button_draw_line"
-            android:layout_width="48dp"
-            android:layout_height="48dp"
-            android:src="@android:drawable/ic_menu_edit"
-            android:contentDescription="@string/line"
-            android:background="?android:selectableItemBackground" />
+        <!-- Подменю с кнопками фигур -->
+        <LinearLayout
+            android:id="@+id/draw_shape_menu"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:layout_weight="1"
+            android:layout_marginStart="4dp"
+            android:layout_marginEnd="4dp">
 
-        <ImageButton
-            android:id="@+id/button_draw_square"
-            android:layout_width="48dp"
-            android:layout_height="48dp"
-            android:src="@android:drawable/ic_menu_add"
-            android:contentDescription="@string/square"
-            android:background="?android:selectableItemBackground" />
+            <ImageButton
+                android:id="@+id/button_draw_line"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:visibility="gone"
+                android:src="@drawable/ic_line_button"
+                android:contentDescription="@string/line"
+                android:background="?android:selectableItemBackground" />
 
-        <ImageButton
-            android:id="@+id/button_draw_circle"
-            android:layout_width="48dp"
-            android:layout_height="48dp"
-            android:src="@android:drawable/ic_menu_compass"
-            android:contentDescription="@string/circle"
-            android:background="?android:selectableItemBackground" />
+            <ImageButton
+                android:id="@+id/button_draw_square"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:visibility="gone"
+                android:src="@drawable/ic_square_button"
+                android:contentDescription="@string/square"
+                android:background="?android:selectableItemBackground" />
+
+            <ImageButton
+                android:id="@+id/button_draw_circle"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:visibility="gone"
+                android:src="@drawable/ic_circle_button"
+                android:contentDescription="@string/circle"
+                android:background="?android:selectableItemBackground" />
+
+            <ImageButton
+                android:id="@+id/button_draw_mode"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:src="@drawable/ic_draw_button"
+                android:contentDescription="@string/draw_mode"
+                android:background="?android:selectableItemBackground" />
+        </LinearLayout>
 
         <ImageButton
             android:id="@+id/button_add_text"
             android:layout_width="48dp"
             android:layout_height="48dp"
+            android:layout_weight="1"
+            android:layout_gravity="bottom"
             android:src="@drawable/ic_text_button"
             android:contentDescription="@string/text"
             android:background="?android:selectableItemBackground" />
@@ -172,7 +200,9 @@
             android:id="@+id/button_draw_drawable"
             android:layout_width="48dp"
             android:layout_height="48dp"
-            android:src="@android:drawable/btn_star"
+            android:layout_weight="1"
+            android:layout_gravity="bottom"
+            android:src="@drawable/ic_star"
             android:contentDescription="@string/add_icon"
             android:background="?android:selectableItemBackground" />
 
@@ -180,7 +210,9 @@
             android:id="@+id/button_color_picker"
             android:layout_width="48dp"
             android:layout_height="48dp"
-            android:src="@android:drawable/ic_menu_manage"
+            android:layout_weight="1"
+            android:layout_gravity="bottom"
+            android:src="@drawable/ic_color_picker"
             android:contentDescription="@string/color"
             android:background="?android:selectableItemBackground" />
 
@@ -188,6 +220,8 @@
             android:id="@+id/stroke_width_seekbar"
             android:layout_width="120dp"
             android:layout_height="wrap_content"
+            android:layout_gravity="bottom"
+            android:layout_marginBottom="12dp"
             android:max="50"
             android:progress="8" />
     </LinearLayout>

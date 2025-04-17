@@ -83,6 +83,19 @@ public class DrawingView extends View {
         paint.setColor(Color.BLACK);
     }
 
+    public void clear() {
+        elements.clear();
+        undoStack.clear();
+        redoStack.clear();
+        currentPathElement = null;
+        previewElement = null;
+        selectedElement = null;
+        pendingText = null;
+        pendingDrawable = null;
+        saveState(); // Можно убрать, если не нужно сохранять пустое состояние
+        invalidate();
+    }
+
     public void setBaseImage(Bitmap bitmap) {
         this.backgroundBitmap = bitmap;
         calculateBaseImageMatrix(); // <-- обязательно вызов масштабирования и центрирования

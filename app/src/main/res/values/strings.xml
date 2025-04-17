@@ -20,4 +20,5 @@
     <string name="color">Выбрать цвет</string>
     <string name="add_icon">Добавить иконку</string>
     <string name="crop_image">Применить обрезку</string>
+    <string name="draw_mode">Рисование</string>
 </resources>

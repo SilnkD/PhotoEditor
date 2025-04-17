@@ -53,11 +53,10 @@ public class EditorFragment extends Fragment {
     private Bitmap currentBitmap;
 
     private LinearLayout drawingToolbar;
-    private ImageButton buttonCamera, buttonGallery, buttonCrop, buttonSave,
-            buttonDrawLine, buttonDrawSquare, buttonDrawCircle,
-            buttonAddText, buttonDrawDrawable, buttonColorPicker,
-            buttonEraser, buttonUndo, buttonRedo, buttonRotate, buttonMirror;
-    private Button buttonApplyCrop;
+    private ImageButton buttonDrawMode, buttonCamera, buttonGallery, buttonCrop,
+            buttonSave, buttonDrawLine, buttonDrawSquare, buttonDrawCircle,
+            buttonAddText, buttonDrawDrawable, buttonColorPicker, buttonEraser,
+            buttonUndo, buttonRedo, buttonRotate, buttonMirror, buttonApplyCrop;
     private SeekBar strokeWidthSeekBar;
 
     private Stack<CanvasState> undoStack = new Stack<>();
@@ -84,7 +83,7 @@ public class EditorFragment extends Fragment {
         drawingView = view.findViewById(R.id.drawing_view);
         cropOverlayView = view.findViewById(R.id.crop_overlay);
         drawingToolbar = view.findViewById(R.id.drawing_toolbar);
-        buttonApplyCrop = view.findViewById(R.id.button_apply_crop);
+        buttonApplyCrop = view.findViewById(R.id.button_confirm_crop);
         strokeWidthSeekBar = view.findViewById(R.id.stroke_width_seekbar);
 
         initButtons(view);
@@ -135,6 +134,7 @@ public class EditorFragment extends Fragment {
     }
 
     private void initButtons(View view) {
+        buttonDrawMode = view.findViewById(R.id.button_draw_mode);
         buttonCamera = view.findViewById(R.id.button_camera);
         buttonGallery = view.findViewById(R.id.button_gallery);
         buttonCrop = view.findViewById(R.id.button_crop);
@@ -156,6 +156,17 @@ public class EditorFragment extends Fragment {
         buttonCamera.setOnClickListener(v -> dispatchTakePictureIntent());
         buttonGallery.setOnClickListener(v -> pickImageFromGallery());
 
+        buttonDrawMode.setOnClickListener(v -> {
+            if (buttonDrawLine.getVisibility() == View.GONE) {
+                buttonDrawLine.setVisibility(View.VISIBLE);
+                buttonDrawSquare.setVisibility(View.VISIBLE);
+                buttonDrawCircle.setVisibility(View.VISIBLE);
+            } else {
+                buttonDrawLine.setVisibility(View.GONE);
+                buttonDrawSquare.setVisibility(View.GONE);
+                buttonDrawCircle.setVisibility(View.GONE);
+            }
+        });
         buttonDrawLine.setOnClickListener(v -> setDrawingMode(DrawingView.Mode.LINE));
         buttonDrawSquare.setOnClickListener(v -> setDrawingMode(DrawingView.Mode.RECT));
         buttonDrawCircle.setOnClickListener(v -> setDrawingMode(DrawingView.Mode.CIRCLE));
@@ -245,6 +256,8 @@ public class EditorFragment extends Fragment {
         buttonRotate.setVisibility(visibility);
         buttonMirror.setVisibility(visibility);
         buttonSave.setVisibility(visibility);
+        buttonUndo.setVisibility(visibility);
+        buttonRedo.setVisibility(visibility);
     }
 
     private void applyCropAndExit() {
@@ -254,25 +267,48 @@ public class EditorFragment extends Fragment {
 
     private void applyCrop() {
         if (currentBitmap == null) return;
+
         RectF cropRect = cropOverlayView.getCropRect();
-        float scaleX = (float) currentBitmap.getWidth() / imageView.getWidth();
-        float scaleY = (float) currentBitmap.getHeight() / imageView.getHeight();
 
-        int left = (int) (cropRect.left * scaleX);
-        int top = (int) (cropRect.top * scaleY);
-        int width = (int) (cropRect.width() * scaleX);
-        int height = (int) (cropRect.height() * scaleY);
+        // Получаем матрицу трансформации из imageView
+        Matrix imageMatrix = imageView.getImageMatrix();
+        float[] matrixValues = new float[9];
+        imageMatrix.getValues(matrixValues);
 
-        left = Math.max(0, left);
-        top = Math.max(0, top);
-        width = Math.min(width, currentBitmap.getWidth() - left);
-        height = Math.min(height, currentBitmap.getHeight() - top);
+        float scaleX = matrixValues[Matrix.MSCALE_X];
+        float scaleY = matrixValues[Matrix.MSCALE_Y];
+        float transX = matrixValues[Matrix.MTRANS_X];
+        float transY = matrixValues[Matrix.MTRANS_Y];
 
-        if (width > 0 && height > 0) {
-            currentBitmap = Bitmap.createBitmap(currentBitmap, left, top, width, height);
-            updateCanvasState();
+        // Вычисляем координаты обрезки в битмапе
+        float left = (cropRect.left - transX) / scaleX;
+        float top = (cropRect.top - transY) / scaleY;
+        float right = (cropRect.right - transX) / scaleX;
+        float bottom = (cropRect.bottom - transY) / scaleY;
+
+        int cropLeft = Math.max(0, Math.min(currentBitmap.getWidth(), (int) left));
+        int cropTop = Math.max(0, Math.min(currentBitmap.getHeight(), (int) top));
+        int cropRight = Math.max(0, Math.min(currentBitmap.getWidth(), (int) right));
+        int cropBottom = Math.max(0, Math.min(currentBitmap.getHeight(), (int) bottom));
+
+        int cropWidth = cropRight - cropLeft;
+        int cropHeight = cropBottom - cropTop;
+
+        // Проверяем, чтобы размеры были положительными
+        if (cropWidth <= 0 || cropHeight <= 0) {
+            showToast("Неверная область обрезки");
+            return;
         }
+
+        // Выполняем обрезку
+        Bitmap croppedBitmap = Bitmap.createBitmap(currentBitmap, cropLeft, cropTop, cropWidth, cropHeight);
+
+        currentBitmap = croppedBitmap;
+        updateImageViews();
+        drawingView.clear(); // Очищаем холст после обрезки
+        updateCanvasState(); // Сохраняем состояние
     }
+
     private void openGallery() {
         Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
         pickImageLauncher.launch(intent);
