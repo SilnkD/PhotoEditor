@@ -11,7 +11,6 @@ import android.graphics.Typeface;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
-import android.os.Handler;
 import android.provider.MediaStore;
 import android.text.InputType;
 import android.view.LayoutInflater;
@@ -44,9 +43,6 @@ public class EditorFragment extends Fragment {
     private ActivityResultLauncher<Intent> pickImageLauncher;
     private ActivityResultLauncher<Intent> captureImageLauncher;
 
-    private static final int REQUEST_IMAGE_CAPTURE = 1;
-    private static final int REQUEST_IMAGE_PICK = 2;
-
     private ImageView imageView;
     private DrawingView drawingView;
     private CropOverlayView cropOverlayView;
@@ -61,9 +57,7 @@ public class EditorFragment extends Fragment {
 
     private Stack<CanvasState> undoStack = new Stack<>();
     private Stack<CanvasState> redoStack = new Stack<>();
-    private Handler handler = new Handler();
-    private Runnable saveStateRunnable;
-    private boolean stateChanged = false; // Флаг для отслеживания изменений
+    private boolean stateChanged = false;
     private Uri photoUri;
 
     private File createImageFile() throws IOException {
@@ -212,32 +206,8 @@ public class EditorFragment extends Fragment {
         });
     }
 
-    // Save state only when explicitly called
     private void updateCanvasState() {
         stateChanged = true;
-    }
-
-    public void saveDrawingView() {
-        if (stateChanged) {
-            redoStack.clear();
-            undoStack.push(new CanvasState(currentBitmap, drawingView.getElements()));
-            stateChanged = false;
-        }
-    }
-
-    private void saveCurrentStateToRedoStack() {
-        redoStack.push(new CanvasState(currentBitmap, drawingView.getElements()));
-    }
-
-    private void saveCurrentStateToUndoStack() {
-        undoStack.push(new CanvasState(currentBitmap, drawingView.getElements()));
-    }
-
-
-    private void applyCanvasState(CanvasState state) {
-        currentBitmap = state.bitmap;
-        drawingView.setElements(state.elements);
-        updateImageViews();
     }
 
     private void toggleCropMode(boolean enable) {
@@ -294,29 +264,22 @@ public class EditorFragment extends Fragment {
         int cropWidth = cropRight - cropLeft;
         int cropHeight = cropBottom - cropTop;
 
-        // Проверяем, чтобы размеры были положительными
         if (cropWidth <= 0 || cropHeight <= 0) {
             showToast("Неверная область обрезки");
             return;
         }
 
-        // Выполняем обрезку
         Bitmap croppedBitmap = Bitmap.createBitmap(currentBitmap, cropLeft, cropTop, cropWidth, cropHeight);
 
         currentBitmap = croppedBitmap;
         updateImageViews();
-        drawingView.clear(); // Очищаем холст после обрезки
-        updateCanvasState(); // Сохраняем состояние
+        drawingView.clear();
+        updateCanvasState();
     }
 
     private void openGallery() {
         Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
         pickImageLauncher.launch(intent);
-    }
-
-    private void openCamera() {
-        Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-        captureImageLauncher.launch(intent);
     }
 
     private void dispatchTakePictureIntent() {
@@ -458,6 +421,7 @@ public class EditorFragment extends Fragment {
         updateImageViews();
         updateCanvasState();
     }
+
     private void updateImageViews() {
         if (currentBitmap != null) {
             imageView.setVisibility(View.GONE);
@@ -507,7 +471,4 @@ public class EditorFragment extends Fragment {
         Toast.makeText(getContext(), message, Toast.LENGTH_SHORT).show();
     }
 
-    public interface Callback {
-        void onDrawingViewChange();
-    }
 }

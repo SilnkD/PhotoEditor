@@ -144,6 +144,7 @@ public class DrawingView extends View {
 
     public void setStrike(boolean isStrike) {
         this.strike = isStrike;
+        updateTypeface();
     }
 
     public void setTextSize(float textSize) {
